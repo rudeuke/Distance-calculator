@@ -1,9 +1,11 @@
 {% extends 'baseTemplate.html' %}
 
-{% block title %}
-<h1>Stava Geodistance</h1>
-{% endblock %}
-
 {% block content %}
-<p>placeholder</p>
+
+{% with ''|center:numberOfPoints as range %}
+{% for _ in range %}
+<div>{{ forloop.counter }}</div>
+{% endfor %}
+{% endwith %}
+
 {% endblock %}
