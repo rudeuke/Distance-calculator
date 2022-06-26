@@ -13,4 +13,10 @@
 {% endfor %}
 {% endwith %}
 
+<button onclick="requestButtonClicked('{{ numberOfPoints }}')">Request</button>
+
+{% if not totalDistance == None %}
+<p>Distance calculated: {{ totalDistance }} [m]</p>
+{% endif %}
+
 {% endblock %}

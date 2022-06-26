@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Stava Geodistance</title>
+    {% load static %}
+    <script src="{% static 'scripts.js' %}" type="text/javascript"></script>
 </head>
 
 <body>
@@ -12,8 +14,9 @@
     <form action="" method="POST">
         {% csrf_token %}
         {{ numberOfPointsForm }}
-    <button type="submit">Select</button>
-        
+        <button type="submit">Select</button>
+    </form>
+
     {% block content %}
     {% endblock %}
 </body>
