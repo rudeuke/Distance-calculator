@@ -4,7 +4,12 @@
 
 {% with ''|center:numberOfPoints as range %}
 {% for _ in range %}
-<div>{{ forloop.counter }}</div>
+
+<div id="point{{ forloop.counter }}">
+    {% csrf_token %}
+    {{ pointForm }}
+</div>
+
 {% endfor %}
 {% endwith %}
 
