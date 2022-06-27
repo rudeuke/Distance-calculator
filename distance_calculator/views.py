@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from distance_calculator.forms import numberOfPointsForm, pointForm
+from datetime import datetime
 import requests
 
 
@@ -24,6 +25,8 @@ def processData(request, temp1, pointsString):
     NOPForm = numberOfPointsForm()
     PForm = pointForm()
     numberOfPointsValue = '2'
+    distance = None
+    timeElapsed = None
 
     if request.method == 'POST':
         NOPForm = numberOfPointsForm(request.POST)
@@ -31,14 +34,23 @@ def processData(request, temp1, pointsString):
             numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
 
     if request.method == 'GET':
+        start_timestamp = datetime.now()
+        print(f'start_timestamp: {start_timestamp}')
+
         pointsList = serializePoints(pointsString)
         distance = calculateDistance(pointsList)
         print(distance)
 
+        end_timestamp = datetime.now()
+        print(f'end_timestamp: {end_timestamp}')
+
+        timeElapsed = (end_timestamp-start_timestamp).total_seconds()
+
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPointsValue,
                'pointForm': PForm,
-               'totalDistance': distance}
+               'totalDistance': distance,
+               'calculationTime': timeElapsed}
 
     return render(request, 'calculator.html', context)
 

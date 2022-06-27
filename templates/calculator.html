@@ -5,18 +5,22 @@
 {% with ''|center:numberOfPoints as range %}
 {% for _ in range %}
 
-<div id="point{{ forloop.counter }}">
+<p id="point{{ forloop.counter }}">
     {% csrf_token %}
     {{ pointForm }}
-</div>
+</p>
 
 {% endfor %}
 {% endwith %}
-
-<button onclick="requestButtonClicked('{{ numberOfPoints }}')">Request</button>
+<p>
+    <button onclick="requestButtonClicked('{{ numberOfPoints }}')">Request</button>
+</p>
 
 {% if not totalDistance == None %}
 <p>Distance calculated: {{ totalDistance }} [m]</p>
+{% endif %}
+{% if not calculationTime == None %}
+<p>Calculation time: {{ calculationTime }} [s]</p>
 {% endif %}
 
 {% endblock %}
