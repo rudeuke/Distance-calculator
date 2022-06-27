@@ -53,8 +53,18 @@ def serializePoints(pointsString):
 
 def getDistanceBetweenPoints(originPoint, destinationPoint):
     requestString = f'http://146.59.46.40:60080/route?origin={originPoint[0]},{originPoint[1]}&destination={destinationPoint[0]},{destinationPoint[1]}'
+    print(f'request string: {requestString}')
     response = requests.get(requestString, auth=('Cristoforo', 'Colombo'))
-    return response.json()['distance']
+    print(f'response: {str(response.json())}')
+
+    try:
+       distanceCalculated = response.json()['distance']
+    except:
+        error = response.json()['error']
+        print(f'response error: {error}')
+        return error
+    else:
+        return distanceCalculated
 
 
 def calculateDistance(pointsList):
@@ -62,5 +72,10 @@ def calculateDistance(pointsList):
     for i in range(1, len(pointsList)):
         partialDistance = getDistanceBetweenPoints(
             pointsList[i-1], pointsList[i])
-        totalDistance += partialDistance
+
+        try:
+            totalDistance += partialDistance
+        except:
+            return f'Error occured: {partialDistance}'
+
     return totalDistance
