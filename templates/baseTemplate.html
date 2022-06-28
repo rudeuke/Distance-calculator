@@ -14,7 +14,7 @@
     <form action="" method="POST">
         {% csrf_token %}
         {{ numberOfPointsForm }}
-        <button type="submit">Select</button>
+        <button type="submit" name="setNumberOfPoints">Select</button>
     </form>
 
     {% block content %}

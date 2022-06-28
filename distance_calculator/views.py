@@ -1,18 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from distance_calculator.forms import numberOfPointsForm, pointForm
 from datetime import datetime
 import requests
 
 
 def calculatorInput(request):
-    NOPForm = numberOfPointsForm()
+    NOPForm = numberOfPointsForm(request.POST or None)
     ptForm = pointForm()
     numberOfPointsValue = '2'
 
     if request.method == 'POST':
-        NOPForm = numberOfPointsForm(request.POST)
-        if NOPForm.is_valid():
-            numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
+
+        if 'setNumberOfPoints' in request.POST:
+            NOPForm = numberOfPointsForm(request.POST)
+            if NOPForm.is_valid():
+                numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
+
+        if 'calculateDistance' in request.POST:
+            pointsString = 'tempValue'
+            return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPointsValue,
@@ -22,16 +28,22 @@ def calculatorInput(request):
 
 
 def processData(request, temp1, pointsString):
-    NOPForm = numberOfPointsForm()
+    NOPForm = numberOfPointsForm(request.POST or None)
     PForm = pointForm()
     numberOfPointsValue = '2'
     distance = None
     timeElapsed = None
 
     if request.method == 'POST':
-        NOPForm = numberOfPointsForm(request.POST)
-        if NOPForm.is_valid():
-            numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
+
+        if 'setNumberOfPoints' in request.POST:
+            NOPForm = numberOfPointsForm(request.POST)
+            if NOPForm.is_valid():
+                numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
+
+        if 'calculateDistance' in request.POST:
+            pointsString = serializePoints(request.POST, numberOfPointsValue)
+            return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     if request.method == 'GET':
         start_timestamp = datetime.now()
