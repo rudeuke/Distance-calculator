@@ -6,23 +6,23 @@ import requests
 
 def calculatorInput(request):
     NOPForm = numberOfPointsForm(request.POST or None)
-    ptForm = pointForm()
-    numberOfPointsValue = '2'
+    PForm = pointForm()
+    numberOfPoints = '2'
 
     if request.method == 'POST':
 
         if 'setNumberOfPoints' in request.POST:
             NOPForm = numberOfPointsForm(request.POST)
             if NOPForm.is_valid():
-                numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
+                numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
 
         if 'calculateDistance' in request.POST:
             pointsString = 'tempValue'
             return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     context = {'numberOfPointsForm': NOPForm,
-               'numberOfPoints': numberOfPointsValue,
-               'pointForm': ptForm}
+               'numberOfPoints': numberOfPoints,
+               'pointForm': PForm}
 
     return render(request, 'calculator.html', context)
 
@@ -30,7 +30,7 @@ def calculatorInput(request):
 def processData(request, temp1, pointsString):
     NOPForm = numberOfPointsForm(request.POST or None)
     PForm = pointForm()
-    numberOfPointsValue = '2'
+    numberOfPoints = '2'
     distance = None
     timeElapsed = None
 
@@ -39,27 +39,27 @@ def processData(request, temp1, pointsString):
         if 'setNumberOfPoints' in request.POST:
             NOPForm = numberOfPointsForm(request.POST)
             if NOPForm.is_valid():
-                numberOfPointsValue = NOPForm.cleaned_data['numberOfPoints']
+                numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
 
         if 'calculateDistance' in request.POST:
-            pointsString = serializePoints(request.POST, numberOfPointsValue)
+            pointsString = 'tempValue'
             return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     if request.method == 'GET':
         start_timestamp = datetime.now()
         print(f'start_timestamp: {start_timestamp}')
 
-        pointsList = serializePoints(pointsString)
-        distance = calculateDistance(pointsList)
-        print(distance)
+        # pointsList = deserializePoints(pointsString)
+        # distance = calculateDistance(pointsList)
+        # print(distance)
 
-        end_timestamp = datetime.now()
-        print(f'end_timestamp: {end_timestamp}')
+        # end_timestamp = datetime.now()
+        # print(f'end_timestamp: {end_timestamp}')
 
-        timeElapsed = (end_timestamp-start_timestamp).total_seconds()
+        # timeElapsed = (end_timestamp-start_timestamp).total_seconds()
 
     context = {'numberOfPointsForm': NOPForm,
-               'numberOfPoints': numberOfPointsValue,
+               'numberOfPoints': numberOfPoints,
                'pointForm': PForm,
                'totalDistance': distance,
                'calculationTime': timeElapsed}
@@ -67,7 +67,7 @@ def processData(request, temp1, pointsString):
     return render(request, 'calculator.html', context)
 
 
-def serializePoints(pointsString):
+def deserializePoints(pointsString):
     listOfPoints = []
     for point in pointsString.split('_'):
         tempSet = (point.split(',')[0], point.split(',')[1])
