@@ -12,6 +12,7 @@
 
 {% endfor %}
 {% endwith %}
+
 <p>
     <button onclick="requestButtonClicked('{{ numberOfPoints }}')">Request</button>
 </p>
@@ -19,6 +20,7 @@
 {% if not totalDistance == None %}
 <p>Distance calculated: {{ totalDistance }} [m]</p>
 {% endif %}
+
 {% if not calculationTime == None %}
 <p>Calculation time: {{ calculationTime }} [s]</p>
 {% endif %}

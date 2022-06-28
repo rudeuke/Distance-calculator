@@ -8,6 +8,6 @@ class numberOfPointsForm(forms.Form):
 
 class pointForm(forms.Form):
     pointLatitude = forms.FloatField(
-        label="Latitude", min_value=-90, max_value=90, widget=forms.TextInput(), required=False)
+        label="Latitude", min_value=-90, max_value=90, initial=0.0, widget=forms.NumberInput(attrs={'step': '0.1'}))
     pointLongitude = forms.FloatField(
-        label="Longitude", min_value=-180, max_value=180, widget=forms.TextInput(), required=False)
+        label="Longitude", min_value=-180, max_value=180, initial=0.0, widget=forms.NumberInput(attrs={'step': '0.1'}))
