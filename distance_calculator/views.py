@@ -117,7 +117,12 @@ def deserializePoints(pointsString):
 
 def getDistanceBetweenPoints(originPoint, destinationPoint):
     requestString = f'http://146.59.46.40:60080/route?origin={originPoint[0]},{originPoint[1]}&destination={destinationPoint[0]},{destinationPoint[1]}'
-    response = requests.get(requestString, auth=('Cristoforo', 'Colombo'))
+
+    try:
+        response = requests.get(requestString, auth=('Cristoforo', 'Colombo'))
+    except:
+        print(f'request error')
+        return 'request error'
 
     try:
        distanceCalculated = response.json()['distance']
