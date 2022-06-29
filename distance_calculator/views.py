@@ -17,7 +17,8 @@ def calculatorInput(request):
                 numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
 
         if 'calculateDistance' in request.POST:
-            pointsString = 'tempValue'
+            inputPointsList = getCoordinates(request.POST)
+            pointsString = serializePoints(inputPointsList)
             return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     context = {'numberOfPointsForm': NOPForm,
@@ -42,21 +43,22 @@ def processData(request, temp1, pointsString):
                 numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
 
         if 'calculateDistance' in request.POST:
-            pointsString = 'tempValue'
+            inputPointsList = getCoordinates(request.POST)
+            pointsString = serializePoints(inputPointsList)
             return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     if request.method == 'GET':
         start_timestamp = datetime.now()
         print(f'start_timestamp: {start_timestamp}')
 
-        # pointsList = deserializePoints(pointsString)
-        # distance = calculateDistance(pointsList)
-        # print(distance)
+        pointsList = deserializePoints(pointsString)
+        distance = calculateDistance(pointsList)
+        print(distance)
 
-        # end_timestamp = datetime.now()
-        # print(f'end_timestamp: {end_timestamp}')
+        end_timestamp = datetime.now()
+        print(f'end_timestamp: {end_timestamp}')
 
-        # timeElapsed = (end_timestamp-start_timestamp).total_seconds()
+        timeElapsed = (end_timestamp-start_timestamp).total_seconds()
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPoints,
@@ -65,6 +67,37 @@ def processData(request, temp1, pointsString):
                'calculationTime': timeElapsed}
 
     return render(request, 'calculator.html', context)
+
+
+def getCoordinates(postRequest):
+    i = 1
+    listOfPoints = []
+
+    while True:
+        latitude = postRequest.get(f'latitude{i}')
+        longitude = postRequest.get(f'longitude{i}')
+        i += 1
+
+        if not latitude is None and not longitude is None:
+            point = (latitude, longitude)
+            listOfPoints.append(point)
+        else:
+            break
+
+    return listOfPoints
+
+
+def serializePoints(pointsList):
+    pointsString = ''
+    coordinatesList = []
+
+    for point in pointsList:
+        formattedPoint = ','.join(point)
+        coordinatesList.append(formattedPoint)
+
+    pointsString = '_'.join(coordinatesList)
+
+    return pointsString
 
 
 def deserializePoints(pointsString):
