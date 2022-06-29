@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('', views.calculatorInput),
-    path('<str:temp1>/<str:pointsString>/', views.processData),
+    path('<str:request_id>/<str:pointsString>/', views.processData),
 ]

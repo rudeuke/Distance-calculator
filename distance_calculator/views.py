@@ -16,9 +16,10 @@ def calculatorInput(request):
                 numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
 
         if 'calculateDistance' in request.POST:
+            inputRequestId = getRequestId(request.POST)
             inputPointsList = getCoordinates(request.POST)
             pointsString = serializePoints(inputPointsList)
-            return redirect(processData, temp1='tempValue', pointsString=pointsString)
+            return redirect(processData, request_id=inputRequestId, pointsString=pointsString)
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPoints}
@@ -26,7 +27,7 @@ def calculatorInput(request):
     return render(request, 'calculator.html', context)
 
 
-def processData(request, temp1, pointsString):
+def processData(request, request_id, pointsString):
     NOPForm = numberOfPointsForm(request.POST or None)
     numberOfPoints = 2
     distance = None
@@ -40,9 +41,10 @@ def processData(request, temp1, pointsString):
                 numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
 
         if 'calculateDistance' in request.POST:
+            inputRequestId = getRequestId(request.POST)
             inputPointsList = getCoordinates(request.POST)
             pointsString = serializePoints(inputPointsList)
-            return redirect(processData, temp1='tempValue', pointsString=pointsString)
+            return redirect(processData, request_id=inputRequestId, pointsString=pointsString)
 
     if request.method == 'GET':
         start_timestamp = datetime.now()
@@ -63,6 +65,16 @@ def processData(request, temp1, pointsString):
                'calculationTime': timeElapsed}
 
     return render(request, 'calculator.html', context)
+
+
+def getRequestId(postRequest):
+    requestId = postRequest.get('request_id')
+
+    if requestId == '':
+        timestamp = datetime.now()
+        requestId = f'request {timestamp}'
+
+    return requestId.replace(' ', '_')
 
 
 def getCoordinates(postRequest):

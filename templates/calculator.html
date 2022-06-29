@@ -19,17 +19,13 @@
     {% endwith %}
 
     <p>
+        REQUEST_ID: <input name="request_id" , type="text">
+    </p>
+
+    <p>
         <button type="submit" name="calculateDistance">Request</button>
     </p>
 
 </form>
-
-{% if not totalDistance == None %}
-<p>Distance calculated: {{ totalDistance }} [m]</p>
-{% endif %}
-
-{% if not calculationTime == None %}
-<p>Calculation time: {{ calculationTime }} [s]</p>
-{% endif %}
 
 {% endblock %}

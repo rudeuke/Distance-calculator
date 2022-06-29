@@ -19,6 +19,14 @@
 
     {% block content %}
     {% endblock %}
+
+    {% if not totalDistance == None %}
+    <p>Distance calculated: {{ totalDistance }} [m]</p>
+    {% endif %}
+
+    {% if not calculationTime == None %}
+    <p>Calculation time: {{ calculationTime }} [s]</p>
+    {% endif %}
 </body>
 
 </html>
