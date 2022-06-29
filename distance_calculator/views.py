@@ -1,5 +1,7 @@
 from django.shortcuts import redirect, render
+from django.utils.timezone import make_aware
 from distance_calculator.forms import numberOfPointsForm
+from .models import Request
 from datetime import datetime
 import requests
 
@@ -19,7 +21,7 @@ def calculatorInput(request):
             inputRequestId = getRequestId(request.POST)
             inputPointsList = getCoordinates(request.POST)
             pointsString = serializePoints(inputPointsList)
-            return redirect(processData, request_id=inputRequestId, pointsString=pointsString)
+            return redirect(processData, requestId=inputRequestId, pointsString=pointsString)
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPoints}
@@ -27,7 +29,7 @@ def calculatorInput(request):
     return render(request, 'calculator.html', context)
 
 
-def processData(request, request_id, pointsString):
+def processData(request, requestId, pointsString):
     NOPForm = numberOfPointsForm(request.POST or None)
     numberOfPoints = 2
     distance = None
@@ -44,20 +46,17 @@ def processData(request, request_id, pointsString):
             inputRequestId = getRequestId(request.POST)
             inputPointsList = getCoordinates(request.POST)
             pointsString = serializePoints(inputPointsList)
-            return redirect(processData, request_id=inputRequestId, pointsString=pointsString)
+            return redirect(processData, requestId=inputRequestId, pointsString=pointsString)
 
     if request.method == 'GET':
-        start_timestamp = datetime.now()
-        print(f'start_timestamp: {start_timestamp}')
-
+        startTimestamp = make_aware(datetime.now())
         pointsList = deserializePoints(pointsString)
         distance = calculateDistance(pointsList)
-        print(distance)
+        endTimestamp = make_aware(datetime.now())
+        timeElapsed = (endTimestamp-startTimestamp).total_seconds()
 
-        end_timestamp = datetime.now()
-        print(f'end_timestamp: {end_timestamp}')
-
-        timeElapsed = (end_timestamp-start_timestamp).total_seconds()
+        Request.objects.update_or_create(
+            {'start_timestamp': startTimestamp, 'end_timestamp': endTimestamp}, request_id=requestId)
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPoints,
@@ -118,9 +117,7 @@ def deserializePoints(pointsString):
 
 def getDistanceBetweenPoints(originPoint, destinationPoint):
     requestString = f'http://146.59.46.40:60080/route?origin={originPoint[0]},{originPoint[1]}&destination={destinationPoint[0]},{destinationPoint[1]}'
-    print(f'request string: {requestString}')
     response = requests.get(requestString, auth=('Cristoforo', 'Colombo'))
-    print(f'response: {str(response.json())}')
 
     try:
        distanceCalculated = response.json()['distance']
