@@ -1,12 +1,11 @@
 from django.shortcuts import redirect, render
-from distance_calculator.forms import numberOfPointsForm, pointForm
+from distance_calculator.forms import numberOfPointsForm
 from datetime import datetime
 import requests
 
 
 def calculatorInput(request):
     NOPForm = numberOfPointsForm(request.POST or None)
-    PForm = pointForm()
     numberOfPoints = 2
 
     if request.method == 'POST':
@@ -22,15 +21,13 @@ def calculatorInput(request):
             return redirect(processData, temp1='tempValue', pointsString=pointsString)
 
     context = {'numberOfPointsForm': NOPForm,
-               'numberOfPoints': numberOfPoints,
-               'pointForm': PForm}
+               'numberOfPoints': numberOfPoints}
 
     return render(request, 'calculator.html', context)
 
 
 def processData(request, temp1, pointsString):
     NOPForm = numberOfPointsForm(request.POST or None)
-    PForm = pointForm()
     numberOfPoints = 2
     distance = None
     timeElapsed = None
@@ -62,7 +59,6 @@ def processData(request, temp1, pointsString):
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPoints,
-               'pointForm': PForm,
                'totalDistance': distance,
                'calculationTime': timeElapsed}
 
