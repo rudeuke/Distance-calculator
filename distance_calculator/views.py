@@ -3,7 +3,9 @@ from django.utils.timezone import make_aware
 from distance_calculator.forms import numberOfPointsForm
 from .models import Request
 from datetime import datetime
-import requests
+from asgiref.sync import sync_to_async
+import asyncio
+import aiohttp
 
 
 def calculatorInput(request):
@@ -29,7 +31,7 @@ def calculatorInput(request):
     return render(request, 'calculator.html', context)
 
 
-def processData(request, requestId, pointsString):
+async def processData(request, requestId, pointsString):
     NOPForm = numberOfPointsForm(request.POST or None)
     numberOfPoints = 2
     distance = None
@@ -49,14 +51,13 @@ def processData(request, requestId, pointsString):
             return redirect(processData, requestId=inputRequestId, pointsString=pointsString)
 
     if request.method == 'GET':
-        startTimestamp = make_aware(datetime.now())
         pointsList = deserializePoints(pointsString)
-        distance = calculateDistance(pointsList)
+        startTimestamp = make_aware(datetime.now())
+        distance = await calculateDistance(pointsList)
         endTimestamp = make_aware(datetime.now())
         timeElapsed = (endTimestamp-startTimestamp).total_seconds()
 
-        Request.objects.update_or_create(
-            {'start_timestamp': startTimestamp, 'end_timestamp': endTimestamp}, request_id=requestId)
+        await sync_to_async(Request.objects.update_or_create)({'start_timestamp': startTimestamp, 'end_timestamp': endTimestamp}, request_id=requestId)
 
     context = {'numberOfPointsForm': NOPForm,
                'numberOfPoints': numberOfPoints,
@@ -115,34 +116,35 @@ def deserializePoints(pointsString):
     return listOfPoints
 
 
-def getDistanceBetweenPoints(originPoint, destinationPoint):
+async def getDistanceBetweenPoints(session, originPoint, destinationPoint):
     requestString = f'http://146.59.46.40:60080/route?origin={originPoint[0]},{originPoint[1]}&destination={destinationPoint[0]},{destinationPoint[1]}'
 
-    try:
-        response = requests.get(requestString, auth=('Cristoforo', 'Colombo'))
-    except:
-        print(f'request error')
-        return 'request error'
-
-    try:
-       distanceCalculated = response.json()['distance']
-    except:
-        error = response.json()['error']
-        print(f'response error: {error}')
-        return error
-    else:
-        return distanceCalculated
-
-
-def calculateDistance(pointsList):
-    totalDistance = 0
-    for i in range(1, len(pointsList)):
-        partialDistance = getDistanceBetweenPoints(
-            pointsList[i-1], pointsList[i])
+    async with session.get(requestString) as response:
+        jsonResponse = await response.json()
 
         try:
-            totalDistance += partialDistance
+            distanceCalculated = jsonResponse['distance']
         except:
-            return f'Error occured: {partialDistance}'
+            error = jsonResponse['error']
+            print(f'response error: {error}')
+            return error
+        else:
+            return distanceCalculated
 
-    return totalDistance
+
+async def calculateDistance(pointsList):
+    actions = []
+
+    async with aiohttp.ClientSession(auth=aiohttp.BasicAuth('Cristoforo', 'Colombo')) as session:
+        for i in range(1, len(pointsList)):
+            actions.append(asyncio.ensure_future(
+                getDistanceBetweenPoints(session, pointsList[i-1], pointsList[i])))
+
+        responses = await asyncio.gather(*actions)
+
+    try:
+        totalDistance = sum(responses)
+    except:
+        return 'Error occured'
+    else:
+        return totalDistance
