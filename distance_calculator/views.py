@@ -7,7 +7,7 @@ import requests
 def calculatorInput(request):
     NOPForm = numberOfPointsForm(request.POST or None)
     PForm = pointForm()
-    numberOfPoints = '2'
+    numberOfPoints = 2
 
     if request.method == 'POST':
 
@@ -30,7 +30,7 @@ def calculatorInput(request):
 def processData(request, temp1, pointsString):
     NOPForm = numberOfPointsForm(request.POST or None)
     PForm = pointForm()
-    numberOfPoints = '2'
+    numberOfPoints = 2
     distance = None
     timeElapsed = None
 
