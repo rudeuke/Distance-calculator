@@ -10,20 +10,17 @@
 
     <p class="noArrows">
         <b>Point {{ forloop.counter }}:</b>&emsp;
-        Latitude: <input name="latitude{{ forloop.counter }}" , type="number" , label="Latitude" ,
-            min="-90" , max="90" , value="0.0" , step=".0000001" required>&emsp;
-        Longitude: <input name="longitude{{ forloop.counter }}" , type="number" , label="Longitude" ,
-            min="-180" , max="180" , value="0.0" , step=".0000001" required>
+        Latitude: <input name="latitude{{ forloop.counter }}" , type="number" , label="Latitude" , min="-90" , max="90"
+            , value="0.0" , step=".0000001" required>&emsp;
+        Longitude: <input name="longitude{{ forloop.counter }}" , type="number" , label="Longitude" , min="-180" ,
+            max="180" , value="0.0" , step=".0000001" required>
     </p>
 
     {% endfor %}
     {% endwith %}
 
     <p>
-        REQUEST_ID:&emsp; <input name="request_id" , type="text">
-    </p>
-
-    <p>
+        REQUEST_ID (optional): <input name="request_id" , type="text">&emsp;
         <button type="submit" name="calculateDistance">Calculate</button>
     </p>
 
