@@ -119,17 +119,23 @@ def deserializePoints(pointsString):
 async def getDistanceBetweenPoints(session, originPoint, destinationPoint):
     requestString = f'http://146.59.46.40:60080/route?origin={originPoint[0]},{originPoint[1]}&destination={destinationPoint[0]},{destinationPoint[1]}'
 
-    async with session.get(requestString) as response:
-        jsonResponse = await response.json()
+    for _ in range(5):
+        async with session.get(requestString) as response:
+            try:
+                jsonResponse = await response.json()
 
-        try:
-            distanceCalculated = jsonResponse['distance']
-        except:
-            error = jsonResponse['error']
-            print(f'response error: {error}')
-            return error
-        else:
-            return distanceCalculated
+            except:
+                continue
+
+            else:
+                try:
+                    distanceCalculated = jsonResponse['distance']
+                except:
+                    error = jsonResponse['error']
+                    print(f'response error: {error}')
+                    return error
+                else:
+                    return distanceCalculated
 
 
 async def calculateDistance(pointsList):
