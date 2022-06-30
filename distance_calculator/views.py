@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from django.utils.timezone import make_aware
+from django.contrib import messages
 from distance_calculator.forms import numberOfPointsForm
 from .models import Request
 from datetime import datetime
@@ -52,7 +53,12 @@ async def processData(request, requestId, pointsString):
     if request.method == 'GET':
         pointsList = deserializePoints(pointsString)
         startTimestamp = make_aware(datetime.now())
-        distance = await calculateDistance(pointsList)
+
+        distance, calculationError = await calculateDistance(pointsList)
+        if calculationError:
+            messages.error(request, distance)
+            return redirect(calculatorInput)
+
         endTimestamp = make_aware(datetime.now())
         timeElapsed = (endTimestamp-startTimestamp).total_seconds()
 

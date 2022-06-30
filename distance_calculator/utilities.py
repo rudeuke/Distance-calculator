@@ -87,6 +87,6 @@ async def calculateDistance(pointsList):
     try:
         totalDistance = sum(responses)
     except:
-        return 'Error occured'
+        return 'Error occured. Try again.', True
     else:
-        return totalDistance
+        return totalDistance, False
