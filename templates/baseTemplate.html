@@ -24,24 +24,43 @@
     {% endfor %}
     {% endif %}
 
-    <h1>Stava Geodistance</h1>
+    <h1 class="text-center py-4">Stava Geodistance</h1>
 
     <form action="" method="POST">
-        {% csrf_token %}
-        {{ numberOfPointsForm }}
-        <button type="submit" name="setNumberOfPoints">Select</button>
+        <div class="form-group">
+            <div class="container py-3">
+                <div class="row">
+                    <div class="col-4 offset-3">
+                        {% csrf_token %}
+                        {{ numberOfPointsForm }}
+                    </div>
+                    <button type="submit" class="col-1 form-control btn btn-secondary"
+                        name="setNumberOfPoints">Select</button>
+                </div>
+            </div>
+        </div>
     </form>
 
     {% block content %}
     {% endblock %}
 
-    {% if not totalDistance == None %}
-    <p>Distance calculated: {{ totalDistance }} [m]</p>
+    {% if not totalDistance == None or not calculationTime == None %}
+    <div class="container py-4 border border-primary rounded">
+        <div class="row">
+            <div class="col-4 offset-2">
+                {% if not totalDistance == None %}
+                Distance calculated: <b>{{ totalDistance }}</b> [m]
+                {% endif %}
+            </div>
+            <div class="col-4 offset-1">
+                {% if not calculationTime == None %}
+                Calculation time: <b>{{ calculationTime }}</b> [s]
+                {% endif %}
+            </div>
+        </div>
+    </div>
     {% endif %}
 
-    {% if not calculationTime == None %}
-    <p>Calculation time: {{ calculationTime }} [s]</p>
-    {% endif %}
 </body>
 
 </html>

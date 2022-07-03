@@ -8,21 +8,46 @@
     {% with ''|center:numberOfPoints as range %}
     {% for _ in range %}
 
-    <p class="noArrows">
-        <b>Point {{ forloop.counter }}:</b>&emsp;
-        Latitude: <input name="latitude{{ forloop.counter }}" , type="number" , label="Latitude" , min="-90" , max="90"
-            , value="0.0" , step=".0000001" required>&emsp;
-        Longitude: <input name="longitude{{ forloop.counter }}" , type="number" , label="Longitude" , min="-180" ,
-            max="180" , value="0.0" , step=".0000001" required>
-    </p>
+    <div class="form-group">
+        <div class="container py-1 border rounded">
+
+            <h5>Point {{ forloop.counter }}:</h5>
+
+            <div class="row">
+                <label for="latitude{{ forloop.counter }}" class="col-1 offset-2 col-form-label">Latitude:</label>
+                <div class="col-2 noArrows">
+                    <input type="number" class="form-control" name="latitude{{ forloop.counter }}" value="0.0" min="-90"
+                        max="90" step=".0000001" required>
+                </div>
+
+                <label for="latitude{{ forloop.counter }}" class="col-1 offset-2 col-form-label">Longitude:</label>
+                <div class="col-2 noArrows">
+                    <input type="number" class="form-control" name="longitude{{ forloop.counter }}" value="0.0"
+                        min="-180" max="180" step=".0000001" required>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 
     {% endfor %}
     {% endwith %}
 
-    <p>
-        REQUEST_ID (optional): <input name="request_id" , type="text" , maxlength="100">&emsp;
-        <button type="submit" name="calculateDistance">Calculate</button>
-    </p>
+    <div class="form-group">
+        <div class="container">
+            <div class="row py-3">
+                <label for="request_id" class="col-3 offset-2 col-form-label">REQUEST_ID (optional):</label>
+                <div class="col-5">
+                    <input type="text" class="form-control" name="request_id" maxlength="100">
+                </div>
+            </div>
+            <div class="row py-4">
+                <button type="submit" class="col-4 offset-4 form-control btn btn-primary btn-block"
+                    name="calculateDistance">Calculate distance</button>
+            </div>
+        </div>
+    </div>
 
 </form>
 
