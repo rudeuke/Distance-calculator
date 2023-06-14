@@ -1,0 +1,20 @@
+{% block calculation %}
+
+{% if not totalDistance == None or not calculationTime == None %}
+<div class="container py-4 border border-primary rounded">
+    <div class="row">
+        <div class="col-4 offset-2">
+            {% if not totalDistance == None %}
+            Distance calculated: <b>{{ totalDistance }}</b> [m]
+            {% endif %}
+        </div>
+        <div class="col-4 offset-1">
+            {% if not calculationTime == None %}
+            Calculation time: <b>{{ calculationTime }}</b> [s]
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
