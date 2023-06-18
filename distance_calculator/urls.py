@@ -1,7 +1,6 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
 
 urlpatterns = [
-    path('', views.calculatorInput),
-    path('<str:requestId>/<str:pointsString>/', views.processData),
+    path('stava-geodistance/', include('stava_geodistance.urls')),
 ]
