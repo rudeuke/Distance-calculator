@@ -35,6 +35,10 @@ function addPoint() {
     inputLatitude.setAttribute("required", "");
     divLatitude.appendChild(inputLatitude);
 
+    var spanLatitude = document.createElement("span");
+    spanLatitude.classList.add("error-message", "text-danger");
+    divLatitude.appendChild(spanLatitude);
+
     var labelLongitude = document.createElement("label");
     labelLongitude.setAttribute("for", "longitude-" + numberOfPoints);
     labelLongitude.classList.add("col-1", "offset-2", "col-form-label");
@@ -55,6 +59,10 @@ function addPoint() {
     inputLongitude.classList.add("form-control");
     inputLongitude.setAttribute("required", "");
     divLongitude.appendChild(inputLongitude);
+
+    var spanLongitude = document.createElement("span");
+    spanLongitude.classList.add("error-message", "text-danger");
+    divLongitude.appendChild(spanLongitude);
 
     var divButton = document.createElement("div");
     divButton.classList.add("col-1", "offset-1");
