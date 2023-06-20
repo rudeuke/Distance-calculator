@@ -1,8 +1,7 @@
-from django.contrib import admin
 from django.urls import path
-from distance_calculator.views import calculator
+from django.urls.conf import include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', calculator),
+    path('stava-geodistance/', include('distance_calculator.urls')),
+    path('stava-geodistance/', include('distance_API.urls')),
 ]
