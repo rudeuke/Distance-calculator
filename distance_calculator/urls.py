@@ -1,5 +1,5 @@
 from django.urls import path
-from distance_calculator import admin
+from django.contrib import admin
 from . import views
 
 urlpatterns = [
