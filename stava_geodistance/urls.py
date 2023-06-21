@@ -3,5 +3,5 @@ from django.urls.conf import include
 
 urlpatterns = [
     path('', include('distance_calculator.urls')),
-    path('API/', include('distance_API.urls')),
+    path('api/', include('distance_API.urls', namespace='distance-api')),
 ]

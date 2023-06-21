@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.timezone import make_aware
 from django.contrib import messages
@@ -7,69 +8,34 @@ from asgiref.sync import sync_to_async
 from .utilities import *
 
 
-def calculatorInput(request):
-    # NOPForm = numberOfPointsForm(request.POST or None)
-    # numberOfPoints = 2
+async def calculator(request):
+    if request.method == 'POST':
+        total_distance = None
+        time_elapsed = None
 
-    # if request.method == 'POST':
+        start_timestamp = make_aware(datetime.now())
 
-    #     if 'setNumberOfPoints' in request.POST:
-    #         NOPForm = numberOfPointsForm(request.POST)
-    #         if NOPForm.is_valid():
-    #             numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
+        points = get_input_points(request.POST)
+        responses, error = await sync_to_async(request_distances)(points)
 
-    #     if 'calculateDistance' in request.POST:
-    #         inputRequestId = getRequestId(request.POST)
-    #         inputPointsList = getCoordinates(request.POST)
-    #         pointsString = serializePoints(inputPointsList)
-    #         return redirect(processData, requestId=inputRequestId, pointsString=pointsString)
+        end_timestamp = make_aware(datetime.now())
+        time_elapsed = (end_timestamp-start_timestamp).total_seconds()
+        total_distance = get_total_distance(responses)
 
-    # context = {'numberOfPointsForm': NOPForm,
-    #            'numberOfPoints': numberOfPoints}
+        id = get_request_id(request.POST)
+        request_record, _ = await sync_to_async(Request.objects.update_or_create)({'start_timestamp': start_timestamp, 'end_timestamp': end_timestamp}, request_id=id)
 
-    # return render(request, 'calculator.html', context)
-    return render(request, 'calculator.html')
+        print(request_record)
+        print(f'DISTANCE CALCULATED: {total_distance}')
 
+        if error:
+            messages.error(request, 'An error occurred while calculating the distance. Please try again.')
+            return redirect('calculator.html')
 
-async def processData(request, requestId, pointsString):
-    # NOPForm = numberOfPointsForm(request.POST or None)
-    # numberOfPoints = 2
-    # distance = None
-    # timeElapsed = None
+        context = {'total_distance': total_distance,
+                'calculation_time': time_elapsed}
 
-    # if request.method == 'POST':
-
-    #     if 'setNumberOfPoints' in request.POST:
-    #         NOPForm = numberOfPointsForm(request.POST)
-    #         if NOPForm.is_valid():
-    #             numberOfPoints = NOPForm.cleaned_data['numberOfPoints']
-
-    #     if 'calculateDistance' in request.POST:
-    #         inputRequestId = getRequestId(request.POST)
-    #         inputPointsList = getCoordinates(request.POST)
-    #         pointsString = serializePoints(inputPointsList)
-    #         return redirect(processData, requestId=inputRequestId, pointsString=pointsString)
-
-    # if request.method == 'GET':
-    #     pointsList = deserializePoints(pointsString)
-    #     startTimestamp = make_aware(datetime.now())
-
-    #     distance, calculationError = await calculateDistance(pointsList)
-    #     if calculationError:
-    #         messages.error(request, distance)
-    #         return redirect(calculatorInput)
-
-    #     endTimestamp = make_aware(datetime.now())
-    #     timeElapsed = (endTimestamp-startTimestamp).total_seconds()
-
-    #     requestRecord, _ = await sync_to_async(Request.objects.update_or_create)({'start_timestamp': startTimestamp, 'end_timestamp': endTimestamp}, request_id=requestId)
-    #     print(requestRecord)
-    #     print(f'DISTANCE CALCULATED: {distance}')
-
-    # context = {'numberOfPointsForm': NOPForm,
-    #            'numberOfPoints': numberOfPoints,
-    #            'totalDistance': distance,
-    #            'calculationTime': timeElapsed}
-
-    # return render(request, 'calculator.html', context)
-    return render(request, 'calculator.html')
+        return render(request, 'calculator.html', context)
+    
+    else:
+        return render(request, 'calculator.html')

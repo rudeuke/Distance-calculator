@@ -32,6 +32,7 @@ function validatePoints() {
             element.classList.add("invalid");
             element.nextElementSibling.textContent = "The value must be between -90 and 90";
             valid = false;
+            return valid;
         }
         else {
             element.classList.remove("valid");
@@ -44,6 +45,7 @@ function validatePoints() {
             element.classList.add("invalid");
             element.nextElementSibling.textContent = "The value must be between -180 and 180";
             valid = false;
+            return valid;
         }
         else {
             element.classList.remove("valid");

@@ -1,92 +1,102 @@
 from datetime import datetime
-import asyncio
-import aiohttp
+import json
+import time
+from django.urls import reverse
+import requests
+import concurrent.futures
 
 
-def getRequestId(postRequest):
-    requestId = postRequest.get('request_id')
+def get_request_id(post_request):
+    request_id = post_request.get('request_id')
 
-    if requestId == '':
+    if request_id == '':
         timestamp = datetime.now()
-        requestId = f'request {timestamp}'
+        request_id = f'request {timestamp}'
 
-    return requestId.replace(' ', '_')
-
-
-def getCoordinates(postRequest):
-    i = 1
-    listOfPoints = []
-
-    while True:
-        latitude = postRequest.get(f'latitude{i}')
-        longitude = postRequest.get(f'longitude{i}')
-        i += 1
-
-        if not latitude is None and not longitude is None:
-            point = (latitude, longitude)
-            listOfPoints.append(point)
-        else:
-            break
-
-    return listOfPoints
+    return request_id.replace(' ', '_')
 
 
-def serializePoints(pointsList):
-    pointsString = ''
-    coordinatesList = []
-
-    for point in pointsList:
-        formattedPoint = ','.join(point)
-        coordinatesList.append(formattedPoint)
-
-    pointsString = '_'.join(coordinatesList)
-
-    return pointsString
-
-
-def deserializePoints(pointsString):
-    listOfPoints = []
-    for point in pointsString.split('_'):
-        tempSet = (point.split(',')[0], point.split(',')[1])
-        listOfPoints.append(tempSet)
-    return listOfPoints
-
-
-async def getDistanceBetweenPoints(session, originPoint, destinationPoint):
-    requestString = f'http://146.59.46.40:60080/route?origin={originPoint[0]},{originPoint[1]}&destination={destinationPoint[0]},{destinationPoint[1]}'
-
-    for _ in range(5):
-        async with session.get(requestString) as response:
-            try:
-                jsonResponse = await response.json()
-
-            except:
-                continue
-
-            else:
-                try:
-                    distanceCalculated = jsonResponse['distance']
-                except:
-                    error = jsonResponse['error']
-                    print(f'response error: {error}')
-                    return error
-                else:
-                    return distanceCalculated
-
-
-async def calculateDistance(pointsList):
-    actions = []
-
-    async with aiohttp.ClientSession(auth=aiohttp.BasicAuth('Cristoforo', 'Colombo')) as session:
-        for i in range(1, len(pointsList)):
-            actions.append(asyncio.ensure_future(
-                getDistanceBetweenPoints(session, pointsList[i-1], pointsList[i])))
-
-        responses = await asyncio.gather(*actions)
-
+def get_input_points(post_request):
     try:
-        totalDistance = sum(responses)
+        points_count = sum(key.startswith('latitude-') for key in post_request)
     except:
-        return 'Error occured. Try again.', True
-    else:
-        return totalDistance, False
+        return None
+    
+    points = []
+    for i in range(1, points_count+1):
+        point = {
+            'latitude': post_request.get(f'latitude-{i}'),
+            'longitude': post_request.get(f'longitude-{i}'),
+        }
+        points.append(point)
+
+    return points
+
+
+def get_segments_from_points(points):
+    points_count = len(points)
+    segments = []
+
+    for i in range(points_count-1):
+        segment = {
+            'lat1': points[i]['latitude'],
+            'lon1': points[i]['longitude'],
+            'lat2': points[i+1]['latitude'],
+            'lon2': points[i+1]['longitude'],
+        }
+        segments.append(segment)
+        
+    return segments
+
+
+def try_fetch_data(url, params):
+    max_retries = 3
+    retry_delay = 0.5
+
+    for retry in range(max_retries):
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            return response.text
+        except Exception as e:
+            print(f'Error: {e}')
+            print(f'Retrying request for URL: {url} (retry {retry+1}/{max_retries})')
+            time.sleep(retry_delay)
+
+    return None
+
+
+def request_distances(points):
+    segments = get_segments_from_points(points)
+    api_url = reverse('distance-api:calculate-distance')
+    full_url = 'http://127.0.0.1:8000' + api_url
+    results = []
+    error = False
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        futures = [executor.submit(try_fetch_data, full_url, params=params) for params in segments]
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                results.append(json.loads(result))
+            except Exception as e:
+                print(f'Error: {e}')
+                error = True
+                return None, error
+
+    return results, error
+
+
+def get_total_distance(responses):
+    total_distance = 0
+    for response in responses:
+        try:
+            distance = float(response["distance"])
+        except:
+            print(f'Error parsing response: {response}')
+            return None
+        
+        total_distance += distance
+
+    return total_distance
