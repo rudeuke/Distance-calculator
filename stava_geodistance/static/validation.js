@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('points-form').addEventListener('submit', function (event) {
         if (!validatePoints()) {
             event.preventDefault();
-            window.alert("wqerqrweqwerwqreqwrrqw");
         }
     });
 });

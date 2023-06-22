@@ -96,7 +96,7 @@ function removePoint(event) {
 
 function updateElementNumbers(startingNumber = 0) {
     var elements = document.querySelectorAll(".container");
-    for (var i = startingNumber; i < elements.length; i++) {
+    for (var i = startingNumber; i < elements.length-1; i++) {
         var h5 = elements[i].querySelector("h5");
         if (h5) {
             h5.textContent = "Point " + (i) + ":";
