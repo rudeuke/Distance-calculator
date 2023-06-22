@@ -73,7 +73,7 @@ def request_distances(points):
     results = []
     error = False
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [executor.submit(try_fetch_data, full_url, params=params) for params in segments]
 
         for future in concurrent.futures.as_completed(futures):

@@ -1,9 +1,14 @@
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from geopy.distance import geodesic
+from time import sleep
+from random import randint
+
 
 @api_view(['GET'])
 def calculate_distance(request):
+    simulate_request_delay()
+
     try:
         lat1 = float(request.GET.get('lat1'))
         lon1 = float(request.GET.get('lon1'))
@@ -19,3 +24,9 @@ def calculate_distance(request):
     
     except (TypeError, ValueError) as e:
         return JsonResponse({'error': f'Invalid coordinates provided. {e}'}, status=400)
+    
+
+def simulate_request_delay():
+    r = randint(50, 170)
+    simulated_delay_time = float(r / 100)
+    sleep(simulated_delay_time)
