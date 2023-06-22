@@ -4,7 +4,7 @@ function addPoint() {
     numberOfPoints++;
 
     var mainContainer = document.createElement("div");
-    mainContainer.classList.add("container", "py-1", "my-1", "border", "border-secondary", "rounded", "bg-light");
+    mainContainer.classList.add("container", "py-3", "my-2", "border", "border-secondary", "rounded", "bg-light");
 
     var h5 = document.createElement("h5");
     h5.textContent = "Point " + numberOfPoints + ":";
