@@ -17,27 +17,25 @@
     </div>
 
     <div class="form-group">
-        <div class="container">
-            <div class="row py-3">
-                <label for="request_id" class="col-3 offset-2 col-form-label">REQUEST_ID (optional):</label>
+        <div class="container my-5">
+            <div class="row">
+                <label for="request_id" class="col-3 offset-2 col-form-label"><b>REQUEST_ID (optional):</b></label>
                 <div class="col-5">
                     <input type="text" class="form-control" name="request_id" maxlength="100">
                 </div>
             </div>
-            <div class="row py-4">
-                <button type="submit" class="col-4 offset-4 form-control btn btn-primary btn-block"
-                    name="calculateDistance">Calculate distance</button>
+            <div class="row my-3">
+                <button type="submit" class="col-4 offset-4 form-control btn btn-primary btn-block border-secondary"
+                    name="calculateDistance"><h5>Calculate distance</h5></button>
             </div>
         </div>
     </div>
 
-    <div clas="container">
+    <div clas="container my-5">
         <div class="row">
-            <div>
-                Total distance: <span id="total-distance"></span>
-            </div>
-            <div>
-                Calculation time: <span id="calculation-time"></span>
+            <div id="results" class="col-2 offset-5 p-4 text-center">
+                <h5><span id="total-distance"></span></h5>
+                <h5><span id="calculation-time"></span></h5>
             </div>
         </div>
     </div>

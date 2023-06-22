@@ -1,3 +1,7 @@
+README OUTDATED
+
+---
+
 # Distance calculator
 WEB application for path length calculation based on given points coordinates (using *GeoDistance* REST API)
 

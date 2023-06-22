@@ -9,10 +9,10 @@ $(document).ready(function () {
             data: formData,
 
             success: function (response) {
-                console.log(formData);
                 console.log(response);
-                $('#total-distance').text(response.total_distance);
-                $('#calculation-time').text(response.calculation_time);
+                $('#results').addClass("bg-light border border-secondary rounded");
+                $('#total-distance').text("Total distance: " + response.total_distance + " km");
+                $('#calculation-time').text("Calculation time: " + response.calculation_time + " s");
             },
 
             error: function () {
